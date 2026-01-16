@@ -22,12 +22,17 @@ func NewRegistrationHandler(ru *usecase.RegistrationUsecase) *RegistrationHandle
 func (rh *RegistrationHandler) Register(w http.ResponseWriter, r *http.Request){
 	var req domain.RegistrationRequest
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err!=nil{
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err!=nil{
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	err := rh.ru.Register(r.Context(), domain.RegistrationRequest{
+	if req.Username == "" || req.Email == "" || req.Password == ""{
+		http.Error(w, "username, email, and password are required", http.StatusBadRequest)
+	}
+
+	err = rh.ru.Register(r.Context(), domain.RegistrationRequest{
 		Username: req.Username,
 		Email: req.Email,
 		Password: req.Password,
