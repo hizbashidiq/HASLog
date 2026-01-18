@@ -1,5 +1,10 @@
 package domain
 
 type LoginRequest struct{
-	Username string ``
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type LoginResponse struct{
+	AccessToken string `json:"access_token"`
 }

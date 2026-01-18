@@ -12,12 +12,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var(
-	ErrEmailAlreadyExists = errors.New("email already exist")
-	ErrUsernameAlreadyExists = errors.New("username already exist")
-	ErrUnknown = errors.New("unknown error")
-)
-
 type RegistrationUsecase struct{
 	ur *repository.UserRepository
 	contextTimeout time.Duration
