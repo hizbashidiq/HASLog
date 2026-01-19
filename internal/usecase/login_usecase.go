@@ -17,10 +17,11 @@ type LoginUsecase struct {
 	jwtSecret []byte
 }
 
-func NewLoginUsecase(ur *repository.UserRepository, contextTimeout time.Duration) *LoginUsecase {
+func NewLoginUsecase(ur *repository.UserRepository, contextTimeout time.Duration, jwtSecret []byte) *LoginUsecase {
 	return &LoginUsecase{
 		ur: ur,
 		contextTimeout: contextTimeout,
+		jwtSecret: jwtSecret,
 	}
 }
 

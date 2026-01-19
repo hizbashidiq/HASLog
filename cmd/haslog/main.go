@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/hizbashidiq/HASLog/internal/api"
-	"github.com/hizbashidiq/HASLog/internal/api/middleware"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/joho/godotenv"
 )
@@ -32,9 +31,9 @@ func main() {
 
 	timeout := 2 * time.Second
 
-	jwtMiddleware := middleware.NewJWTMiddleware([]byte(os.Getenv("JWT_SECRET")))
+	jwtSecret := []byte(os.Getenv("JWT_SECRET"))
 
-	api.Setup(db, timeout, *jwtMiddleware)
+	api.Setup(db, timeout, jwtSecret)
 
 	log.Println("Starting web server...")
 	http.ListenAndServe(os.Getenv("SERVER_ADDRESS"), nil)
