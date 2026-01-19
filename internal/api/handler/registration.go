@@ -20,6 +20,10 @@ func NewRegistrationHandler(ru *usecase.RegistrationUsecase) *RegistrationHandle
 }
 
 func (rh *RegistrationHandler) Register(w http.ResponseWriter, r *http.Request){
+
+	if r.Method != http.MethodPost{
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	}
 	var req domain.RegistrationRequest
 
 	err := json.NewDecoder(r.Body).Decode(&req)
@@ -27,9 +31,11 @@ func (rh *RegistrationHandler) Register(w http.ResponseWriter, r *http.Request){
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
+	defer r.Body.Close()
 
 	if req.Username == "" || req.Email == "" || req.Password == ""{
 		http.Error(w, "username, email, and password are required", http.StatusBadRequest)
+		return
 	}
 
 	err = rh.ru.Register(r.Context(), domain.RegistrationRequest{
