@@ -6,19 +6,21 @@ import (
 	"time"
 
 	"github.com/hizbashidiq/HASLog/internal/api/handler"
+	"github.com/hizbashidiq/HASLog/internal/api/middleware"
 	"github.com/hizbashidiq/HASLog/internal/repository"
 	"github.com/hizbashidiq/HASLog/internal/usecase"
 )
 
 
 
-func Setup(db *sql.DB, timeout time.Duration){
+func Setup(db *sql.DB, timeout time.Duration, jm middleware.JWTMiddleware){
 
 	// public APIs
 	NewRegistrationRouter(db, timeout)
+	NewLoginRouter(db, timeout)
 
 	// private APIs
-	NewLoginRouter(db, timeout)
+	NewProfileRouter(db, timeout, jm)
 }
 
 func NewRegistrationRouter(db *sql.DB, timeout time.Duration){
@@ -35,4 +37,12 @@ func NewLoginRouter(db *sql.DB, timeout time.Duration){
 	lh := handler.NewLoginHandler(lu)
 
 	http.HandleFunc("/login", lh.Login)
+}
+
+func NewProfileRouter(db *sql.DB, timeout time.Duration, jm middleware.JWTMiddleware){
+	ur := repository.NewUserRepository(db)
+	pu := usecase.NewProfileUsecase(ur, timeout)
+	ph := handler.NewProfileHandler(pu)
+
+	http.Handle("/profile", jm.JwtAuthMiddleware(http.HandlerFunc(ph.Profile)))
 }

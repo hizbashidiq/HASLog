@@ -67,3 +67,20 @@ func (ur *UserRepository) FindByUsername(ctx context.Context, username string)(d
 		
 	return user, err
 }
+
+func (ur *UserRepository)FindByID(ctx context.Context, userID int64)(domain.User, error){
+	var user domain.User
+	query := `
+		SELECT id, username, email, password_hash, created_at
+		FROM users
+		WHERE id=$1
+	`
+	err := ur.db.QueryRowContext(ctx, query, userID).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Email,
+		&user.PasswordHash,
+		&user.CreatedAt,
+	)
+	return user, err
+}
